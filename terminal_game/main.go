@@ -147,10 +147,7 @@ func (hr *Hero) gen_enemy() *Enemy {
 		"Тяжелый топор",
 	}
 
-	// lvl = rand.IntN(hr.lvl)+1
-	// enemy := Enemy{"хохол", rand.IntN(76) + 50, rand.IntN(31) + 10, rand.IntN(21) + 10, "палка", rand.IntN(25), rand.IntN(66) + 5, lvl}
-	// return &enemy
-	lvl := rand.IntN(hr.lvl) + 1 // уровень врага от 1 до hr.lvl
+	lvl := rand.IntN(hr.lvl) + 1
 
 	hp := 50 + lvl*25 + rand.IntN(25)
 	armor := 5 + lvl*3 + rand.IntN(5)
@@ -218,7 +215,13 @@ func (hr *Hero) menu() string {
 
 func main() {
 
-	herro := &Hero{100, "Ярик", 100, 50, 20, "ак-47", 50, 100, 0, 100, 1}
+	var name string
+
+	fmt.Print("Введите имя вашего персонажа: ")
+
+	fmt.Scan(&name)
+
+	herro := &Hero{100, name, 100, 50, 20, "ак-47", 50, 100, 0, 100, 1}
 
 	herro.menu()
 
