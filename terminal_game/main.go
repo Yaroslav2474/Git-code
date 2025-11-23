@@ -1,10 +1,13 @@
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"time"
 
 	"math/rand/v2"
+
+	_ "github.com/mattn/go-sqlite3"
 )
 
 type Hero struct {
@@ -214,6 +217,8 @@ func (hr *Hero) menu() string {
 }
 
 func main() {
+
+	database, _ := sql.Open("sqlite3", "./db.db")
 
 	var name string
 
