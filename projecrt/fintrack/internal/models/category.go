@@ -1,6 +1,7 @@
 package models
 
 import (
+	"encoding/json"
 	"fmt"
 	"os"
 )
@@ -36,21 +37,88 @@ var (
 	}
 )
 
-func GetDefaultCategories() [7][4]string {
+const filename = "./data/categories.json"
 
-	var defCat [7][4]string
+func loadFromFile() {
+	file, err := os.Open(filename)
+	if err != nil {
+		return
+	}
+	defer file.Close()
 
-	fileInfo, err := os.Stat("./data/categories.json")
+	decoder := json.NewDecoder(file)
+	err = decoder.Decode(&defaultExpenseCategories)
+	if err != nil {
+		fmt.Println("Ошибка загрузки данных, начнём заново.")
+		defaultExpenseCategories = []Category{}
+	}
+
+	decoder = json.NewDecoder(file)
+	err = decoder.Decode(&defaultIncomeCategories)
+	if err != nil {
+		fmt.Println("Ошибка загрузки данных, начнём заново.")
+		defaultIncomeCategories = []Category{}
+	}
+}
+
+func saveToFile() {
+	file, err := os.Create(filename)
+	if err != nil {
+		fmt.Println("Не могу сохранить файл.")
+		return
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	err = encoder.Encode(defaultExpenseCategories)
+	if err != nil {
+		fmt.Println("Ошибка при сохранении.")
+	}
+
+	encoder = json.NewEncoder(file)
+	err = encoder.Encode(defaultIncomeCategories)
+	if err != nil {
+		fmt.Println("Ошибка при сохранении.")
+	}
+}
+
+func GetDefaultCategories() []Category {
+
+	fileInfo, err := os.ReadFile("./data/categories.json")
 
 	if err != nil {
 		fmt.Printf("Возникла ошабка при инициализации базы данных\n%s", err)
 	}
 
-	for i := 0; i < 4; i++ {
-		for y := 0; y < 4; y++ {
+	if fileInfo == nil {
+		for _, v := range defaultExpenseCategories {
+			fmt.Printf("ID: %s Название: %s  Тип транзакции: %s  Подлежит редактированию: %v", v.ID, v.Title, v.Type, v.Edit)
+		}
+		for _, v := range defaultIncomeCategories {
+			fmt.Printf("ID: %s Название: %s  Тип транзакции: %s  Подлежит редактированию: %v", v.ID, v.Title, v.Type, v.Edit)
+		}
 
+	}
+	var inf []Category
+
+	if err := json.Unmarshal(fileInfo, &inf); err != nil {
+		fmt.Printf("Ошибка парсинга JSON: %v\n", err)
+		return inf
+	}
+
+	for _, v := range inf {
+		fmt.Printf("ID: %s Название: %s  Тип транзакции: %s  Подлежит редактированию: %v", v.ID, v.Title, v.Type, v.Edit)
+	}
+
+	return inf
+}
+
+func FindCategoryByID(id string) (*Category, error) {
+	defaultCategories := GetDefaultCategories()
+	for _, category := range defaultCategories {
+		if category.ID == id {
+			return &category, nil
 		}
 	}
 
-	return defCat
 }
