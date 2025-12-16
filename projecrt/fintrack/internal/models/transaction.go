@@ -2,7 +2,33 @@ package models
 
 import (
 	"fmt"
+	"time"
 )
+
+type TransactionType string
+
+var Pending, Completed, Canceled TransactionType
+
+type Transaction struct {
+	ID          string
+	Amount      float64
+	Type        TransactionType
+	Category    string
+	Date        time.Time
+	Description string
+}
+
+func (tran Transaction) IsValid() (bool, error) {
+
+}
+
+func (tran Transaction) GetFormattedAmount() string {
+
+}
+
+func (tran Transaction) GetDisplayDate() string {
+
+}
 
 func AddTrannsaction() {
 	var choise int
