@@ -20,6 +20,23 @@ type Transaction struct {
 
 func (tran Transaction) IsValid() (bool, error) {
 
+	if tran.Amount <= 0 {
+		return false, fmt.Errorf("сумма должна быть положительной")
+	}
+
+	if tran.Type != TransactionType(Income) || tran.Type != TransactionType(Expense) {
+		return false, fmt.Errorf("неизветсный тип транзакции")
+	}
+
+	if len(tran.Category) == 0 {
+		return false, fmt.Errorf("категория не может быть пустой")
+	}
+
+	if len(tran.Description) == 0 {
+		return false, fmt.Errorf("описание не должно быть пустым")
+	}
+
+	return true, fmt.Errorf("")
 }
 
 func (tran Transaction) GetFormattedAmount() string {
@@ -27,6 +44,14 @@ func (tran Transaction) GetFormattedAmount() string {
 }
 
 func (tran Transaction) GetDisplayDate() string {
+
+}
+
+func NewTransaction(amount float64, tType TransactionType, category, description string) (*Transaction, error) {
+
+}
+
+func ParseTransactionType(s string) (TransactionType, error) {
 
 }
 
