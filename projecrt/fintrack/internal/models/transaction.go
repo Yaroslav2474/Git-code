@@ -41,10 +41,26 @@ func (tran Transaction) IsValid() (bool, error) {
 
 func (tran Transaction) GetFormattedAmount() string {
 
+	wholeAmount := int(tran.Amount)
+	fractionAmount := tran.Amount - float64(wholeAmount)
+
+	formattedAmount := ""
+	// temp := strconv.Itoa(wholeAmount)
+
+	correctAmount := formattedAmount + "." + fmt.Sprintf("%02d", int(fractionAmount*100))
+
+	if tran.Type == TransactionType(Expense) {
+		correctAmount = "(" + correctAmount + " ₽" + ")"
+		return correctAmount
+	} else {
+		correctAmount = "+" + correctAmount + " ₽"
+		return correctAmount
+	}
+
 }
 
-func (tran Transaction) GetDisplayDate() string {
-
+func (tran Transaction) GetDisplayDate() (int, error) {
+	return fmt.Printf("%d.%d.%dг.", tran.Date.Day(), tran.Date.Month(), tran.Date.Year())
 }
 
 func NewTransaction(amount float64, tType TransactionType, category, description string) (*Transaction, error) {
