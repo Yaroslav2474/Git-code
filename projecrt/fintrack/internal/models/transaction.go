@@ -2,6 +2,10 @@ package models
 
 import (
 	"fmt"
+	"math"
+	"math/rand"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -64,11 +68,51 @@ func (tran Transaction) GetDisplayDate() (int, error) {
 }
 
 func NewTransaction(amount float64, tType TransactionType, category, description string) (*Transaction, error) {
+	rand.Seed(time.Now().UnixNano())
+	newID := strconv.Itoa(rand.Intn(9000000) + 1000000)
 
+	if category == string(Expense) {
+		if amount < 0 {
+			amount = math.Round(amount*100) / 100
+		} else {
+			return &Transaction{Category: " ", ID: " ", Amount: 0.0, Type: " ", Date: time.Now(), Description: " "}, fmt.Errorf("ошибка при введении суммы, она должна быть больше 0")
+		}
+	} else {
+		if amount > 0 {
+			amount = math.Round(amount*100) / 100
+		} else {
+			return &Transaction{Category: " ", ID: " ", Amount: 0.0, Type: " ", Date: time.Now(), Description: " "}, fmt.Errorf("ошибка при введении суммы, она должна быть больше 0")
+		}
+	}
+
+	if tType != "income" || tType != "expense" {
+		return &Transaction{Category: " ", ID: " ", Amount: 0.0, Type: " ", Date: time.Now(), Description: " "}, fmt.Errorf("ошибка при введении типа транзакции")
+	}
+
+	if len(category) == 0 {
+		return &Transaction{Category: " ", ID: " ", Amount: 0.0, Type: " ", Date: time.Now(), Description: " "}, fmt.Errorf("ошибка при введении категории")
+	} else {
+		category = strings.ToLower(strings.TrimSpace(category))
+	}
+
+	if len(description) >= 256 {
+		return &Transaction{Category: " ", ID: " ", Amount: 0.0, Type: " ", Date: time.Now(), Description: " "}, fmt.Errorf("ошибка при введении описания")
+	}
+
+	return &Transaction{ID: newID, Amount: amount, Type: tType, Category: category, Date: time.Now(), Description: description}, fmt.Errorf("")
 }
 
 func ParseTransactionType(s string) (TransactionType, error) {
+	userType := strings.TrimSpace(strings.ToLower(s))
 
+	switch userType {
+	case "income":
+		return TransactionType(Income), fmt.Errorf("")
+	case "expense":
+		return TransactionType(Expense), fmt.Errorf("")
+	default:
+		return TransactionType(""), fmt.Errorf("такого типа не существует")
+	}
 }
 
 func AddTrannsaction() {
@@ -85,11 +129,12 @@ func AddTrannsaction() {
 			fmt.Println("Выберете вид транзакции: \n1.Доходы\n2.Расходы")
 			fmt.Scan(&choise)
 
-			if choise == 1 {
+			switch choise {
+			case 1:
 
-			} else if choise == 2 {
+			case 2:
 
-			} else {
+			default:
 				fmt.Print("Только два вида транзакций.")
 			}
 
